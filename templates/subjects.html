@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Предметы — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<h1>Предметы</h1>
+
+{% if available %}
+    <h2>🟢 Открыта запись</h2>
+    <div class="grid">
+        {% for s in available %}
+            <a href="{% url 'subject_detail' s.id %}" class="card subject-card">
+                <h3>{{ s.name }}</h3>
+                <p class="muted">{{ s.type_display }}</p>
+                <p>📅 {{ s.date|date:"d.m.Y" }} ⏰ {{ s.start_time|time:"H:i" }}–{{ s.end_time|time:"H:i" }}</p>
+                <p>👥 Свободно: <b>{{ s.free_slots }}</b> / {{ s.max_slots }}</p>
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if upcoming %}
+    <h2 class="mt">⏳ Скоро откроется</h2>
+    <div class="grid">
+        {% for s in upcoming %}
+            <div class="card subject-card disabled">
+                <h3>{{ s.name }}</h3>
+                <p class="muted">{{ s.type_display }}</p>
+                <p>📅 {{ s.date|date:"d.m.Y" }} ⏰ {{ s.start_time|time:"H:i" }}</p>
+                <p class="muted">Запись откроется за 24 часа до начала</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if not available and not upcoming %}
+    <div class="card center">
+        <p class="muted">Пока нет доступных предметов.</p>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ subject.name }} — Админ{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>{{ subject.name }}</h1>
+    <p class="muted">{{ subject.type_display }}</p>
+    <p>📅 {{ subject.date|date:"d.m.Y" }} ⏰ {{ subject.start_time|time:"H:i" }}–{{ subject.end_time|time:"H:i" }}</p>
+    <p>👥 {{ subject.booked_count }} / {{ subject.max_slots }}</p>
+    <a href="{% url 'admin_force_book' subject.id %}" class="btn primary">✍️ Принудительная запись</a>
+</div>
+
+<h2>Места</h2>
+<table class="table">
+    <thead><tr><th>Место</th><th>Студент</th><th>Действия</th></tr></thead>
+    <tbody>
+        {% for slot in slots %}
+            <tr>
+                <td>{{ slot.number }}</td>
+                <td>
+                    {% if slot.booking %}
+                        {{ slot.booking.last_name }}
+                    {% else %}
+                        <span class="muted">свободно</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if slot.booking %}
+                        <a href="{% url 'admin_booking_delete' slot.booking.id %}" class="btn small danger">Удалить запись</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p class="mt"><a href="{% url 'admin_subjects' %}">← К предметам</a></p>
+{% endblock %}

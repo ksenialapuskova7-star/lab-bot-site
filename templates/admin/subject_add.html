@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить предмет — Админ{% endblock %}
+
+{% block content %}
+<div class="card narrow">
+    <h1>Добавить предмет</h1>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% for e in field.errors %}<div class="errors">{{ e }}</div>{% endfor %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn primary full">Добавить</button>
+    </form>
+    <p class="mt"><a href="{% url 'admin_subjects' %}">← Назад</a></p>
+</div>
+{% endblock %}

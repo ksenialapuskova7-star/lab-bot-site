@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Админ-вход — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="card narrow">
+    <h1>🔐 Админ-панель</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.password.id_for_label }}">Пароль администратора</label>
+            {{ form.password }}
+        </div>
+        <button type="submit" class="btn primary full">Войти</button>
+    </form>
+</div>
+{% endblock %}

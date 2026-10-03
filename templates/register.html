@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="card narrow">
+    <h1>Регистрация</h1>
+    <p class="muted">Выберите себя из списка и придумайте логин с паролем.</p>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="{{ form.group_name.id_for_label }}">Группа</label>
+            {{ form.group_name }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.student_id.id_for_label }}">Фамилия и имя</label>
+            {{ form.student_id }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.username.id_for_label }}">Логин</label>
+            {{ form.username }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.password1.id_for_label }}">Пароль</label>
+            {{ form.password1 }}
+            <small class="muted">Минимум 6 символов, не только цифры.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.password2.id_for_label }}">Повтор пароля</label>
+            {{ form.password2 }}
+        </div>
+
+        {% if form.non_field_errors %}
+            <div class="errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        {% for field in form %}
+            {% for error in field.errors %}
+                <div class="errors">{{ field.label }}: {{ error }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        <button type="submit" class="btn primary full">Зарегистрироваться</button>
+    </form>
+
+    <p class="muted center">Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
+</div>
+
+<script>
+    // Фильтрация списка студентов по группе
+    document.addEventListener("DOMContentLoaded", function () {
+        var groupSelect = document.getElementById("id_group");
+        var studentSelect = document.getElementById("id_student");
+        if (!groupSelect || !studentSelect) return;
+
+        var allOptions = Array.from(studentSelect.options).map(function (opt) {
+            return { value: opt.value, text: opt.text, group: extractGroup(opt.text) };
+        });
+
+        function extractGroup(text) {
+            var m = text.match(/\(([^)]+)\)/);
+            return m ? m[1].trim() : "";
+        }
+
+        function filter() {
+            var g = groupSelect.value;
+            studentSelect.innerHTML = "";
+            var placeholder = document.createElement("option");
+            placeholder.value = "";
+            placeholder.text = "— выберите себя —";
+            studentSelect.appendChild(placeholder);
+
+            allOptions.forEach(function (o) {
+                if (o.value === "") return;
+                if (!g || o.group === g) {
+                    var opt = document.createElement("option");
+                    opt.value = o.value;
+                    opt.text = o.text;
+                    studentSelect.appendChild(opt);
+                }
+            });
+        }
+
+        groupSelect.addEventListener("change", filter);
+        filter();
+    });
+</script>
+{% endblock %}

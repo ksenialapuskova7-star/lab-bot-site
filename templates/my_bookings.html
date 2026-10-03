@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Мои записи — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<h1>Мои записи</h1>
+
+{% if bookings %}
+    <div class="grid">
+        {% for b in bookings %}
+            <div class="card">
+                <h3>{{ b.subject.name }}</h3>
+                <p class="muted">{{ b.subject.type_display }}</p>
+                <p>📅 {{ b.subject.date|date:"d.m.Y" }} ⏰ {{ b.subject.start_time|time:"H:i" }}</p>
+                <p>🪑 Место: <b>{{ b.slot_number }}</b></p>
+                <form method="post" action="{% url 'cancel_booking' b.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn danger">Отменить запись</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card center">
+        <p class="muted">У вас пока нет записей.</p>
+        <a href="{% url 'subjects' %}" class="btn primary">К предметам</a>
+    </div>
+{% endif %}
+{% endblock %}

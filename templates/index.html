@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card center">
+    <h1>{{ SITE_NAME }}</h1>
+    <p class="muted">Запись открывается за 24 часа до начала занятия.</p>
+
+    <div class="actions">
+        <a href="{% url 'login' %}" class="btn primary">Войти</a>
+        <a href="{% url 'register' %}" class="btn">Регистрация</a>
+    </div>
+</div>
+{% endblock %}

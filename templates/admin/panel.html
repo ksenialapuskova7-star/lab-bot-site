@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Админ-панель — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<h1>🔐 Админ-панель</h1>
+
+<div class="grid">
+    <div class="card stat"><div class="stat-value">{{ stats.students_total }}</div><div class="muted">Всего студентов</div></div>
+    <div class="card stat"><div class="stat-value">{{ stats.students_registered }}</div><div class="muted">Зарегистрировано</div></div>
+    <div class="card stat"><div class="stat-value">{{ stats.subjects_total }}</div><div class="muted">Активных предметов</div></div>
+    <div class="card stat"><div class="stat-value">{{ stats.bookings_total }}</div><div class="muted">Всего записей</div></div>
+</div>
+
+<div class="actions mt">
+    <a href="{% url 'admin_students' %}" class="btn primary">👥 Студенты</a>
+    <a href="{% url 'admin_subjects' %}" class="btn primary">📚 Предметы</a>
+    <a href="{% url 'admin_logout' %}" class="btn danger">Выйти</a>
+</div>
+{% endblock %}

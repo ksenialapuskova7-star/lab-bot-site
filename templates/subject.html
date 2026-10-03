@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ subject.name }} — {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>{{ subject.name }}</h1>
+    <p class="muted">{{ subject.type_display }}</p>
+    <p>📅 {{ subject.date|date:"d.m.Y" }} ⏰ {{ subject.start_time|time:"H:i" }}–{{ subject.end_time|time:"H:i" }}</p>
+    <p>👥 Свободно: <b>{{ subject.free_slots }}</b> / {{ subject.max_slots }}</p>
+</div>
+
+{% if already_booked %}
+    <div class="card notice">
+        <p>Вы уже записаны на место <b>{{ already_booked.slot_number }}</b>.</p>
+        <a href="{% url 'my_bookings' %}" class="btn">Мои записи</a>
+    </div>
+{% endif %}
+
+<h2>Выберите место</h2>
+<div class="slots">
+    {% for slot in slots %}
+        {% if slot.is_booked %}
+            <div class="slot booked" title="Занято">🔴 {{ slot.number }}</div>
+        {% else %}
+            <form method="post" action="{% url 'book_slot' subject.id %}" class="slot-form">
+                {% csrf_token %}
+                <input type="hidden" name="slot_number" value="{{ slot.number }}">
+                <button type="submit" class="slot free" {% if already_booked %}disabled{% endif %}>🟢 {{ slot.number }}</button>
+            </form>
+        {% endif %}
+    {% endfor %}
+</div>
+
+{% if bookings %}
+    <h2 class="mt">Кто записан</h2>
+    <ul class="bookings-list">
+        {% for b in bookings %}
+            <li>Место {{ b.slot_number }}: <b>{{ b.last_name }}</b></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<p class="mt"><a href="{% url 'subjects' %}">← Назад к предметам</a></p>
+{% endblock %}

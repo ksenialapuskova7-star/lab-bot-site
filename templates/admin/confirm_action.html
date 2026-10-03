@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card narrow center">
+    <h1>{{ title }}</h1>
+    <p>{{ message }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="actions">
+            <button type="submit" class="btn danger">Подтвердить</button>
+            <a href="{% url cancel_url %}" class="btn">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
