@@ -247,3 +247,56 @@ footer {
     color: var(--muted);
     font-size: 0.85rem;
 }
+
+/* ============ ИНДИКАТОР ВАЛИДНОСТИ ФОРМЫ ============ */
+.form-status {
+    margin: 16px 0;
+}
+
+.form-status-bar {
+    height: 4px;
+    width: 0;
+    background: var(--gray);
+    border-radius: 999px;
+    transition: width 0.3s, background 0.3s;
+}
+
+.form-status-bar.weak {
+    background: #dc2626;
+    width: 100%;
+}
+
+.form-status-bar.medium {
+    background: #f59e0b;
+    width: 100%;
+}
+
+.form-status-bar.strong {
+    background: #16a34a;
+    width: 100%;
+}
+
+.form-status-text {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    min-height: 1.2em;
+}
+
+.form-status-text.weak {
+    color: #dc2626;
+}
+
+.form-status-text.medium {
+    color: #f59e0b;
+}
+
+.form-status-text.strong {
+    color: #16a34a;
+}
+
+/* Заблокированная кнопка */
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

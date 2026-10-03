@@ -7,7 +7,7 @@
     <h1>Регистрация</h1>
     <p class="muted">Выберите себя из списка и придумайте логин с паролем.</p>
 
-    <form method="post" novalidate>
+    <form method="post" novalidate id="register-form">
         {% csrf_token %}
 
         <div class="form-group">
@@ -36,6 +36,12 @@
             {{ form.password2 }}
         </div>
 
+        <!-- Индикатор валидности формы -->
+        <div class="form-status" id="form-status">
+            <div class="form-status-bar" id="form-status-bar"></div>
+            <div class="form-status-text" id="form-status-text"></div>
+        </div>
+
         {% if form.non_field_errors %}
             <div class="errors">{{ form.non_field_errors }}</div>
         {% endif %}
@@ -46,19 +52,29 @@
             {% endfor %}
         {% endfor %}
 
-        <button type="submit" class="btn primary full">Зарегистрироваться</button>
+        <button type="submit" class="btn primary full" id="submit-btn" disabled>
+            Зарегистрироваться
+        </button>
     </form>
 
     <p class="muted center">Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
 </div>
 
 <script>
-    // Фильтрация списка студентов по группе
+    // ============ ФИЛЬТРАЦИЯ СТУДЕНТОВ ПО ГРУППЕ ============
     document.addEventListener("DOMContentLoaded", function () {
         var groupSelect = document.getElementById("id_group");
         var studentSelect = document.getElementById("id_student");
+        var usernameInput = document.getElementById("id_username");
+        var password1 = document.getElementById("id_password1");
+        var password2 = document.getElementById("id_password2");
+        var submitBtn = document.getElementById("submit-btn");
+        var statusBar = document.getElementById("form-status-bar");
+        var statusText = document.getElementById("form-status-text");
+
         if (!groupSelect || !studentSelect) return;
 
+        // --- Фильтрация студентов ---
         var allOptions = Array.from(studentSelect.options).map(function (opt) {
             return { value: opt.value, text: opt.text, group: extractGroup(opt.text) };
         });
@@ -68,7 +84,7 @@
             return m ? m[1].trim() : "";
         }
 
-        function filter() {
+        function filterStudents() {
             var g = groupSelect.value;
             studentSelect.innerHTML = "";
             var placeholder = document.createElement("option");
@@ -85,10 +101,75 @@
                     studentSelect.appendChild(opt);
                 }
             });
+            updateStatus();
         }
 
-        groupSelect.addEventListener("change", filter);
-        filter();
+        groupSelect.addEventListener("change", filterStudents);
+        filterStudents();
+
+        // --- Проверка валидности формы ---
+        function updateStatus() {
+            var group = groupSelect.value;
+            var student = studentSelect.value;
+            var username = usernameInput.value.trim();
+            var p1 = password1.value;
+            var p2 = password2.value;
+
+            var level = 0; // 0 - красный, 1 - жёлтый, 2 - зелёный
+            var message = "";
+
+            if (!group) {
+                level = 0;
+                message = "🔴 Выберите группу";
+            } else if (!student) {
+                level = 0;
+                message = "🔴 Выберите себя из списка";
+            } else if (username.length < 3) {
+                level = 0;
+                message = "🔴 Логин слишком короткий (мин. 3 символа)";
+            } else if (p1.length < 6) {
+                level = 0;
+                message = "🔴 Пароль слишком короткий (мин. 6 символов)";
+            } else if (p1 !== p2) {
+                level = 1;
+                message = "🟡 Пароли не совпадают";
+            } else {
+                level = 2;
+                message = "🟢 Всё готово! Можно регистрироваться";
+            }
+
+            statusBar.classList.remove("weak", "medium", "strong");
+            statusText.classList.remove("weak", "medium", "strong");
+
+            if (level === 0) {
+                statusBar.style.width = "100%";
+                statusBar.classList.add("weak");
+                statusText.classList.add("weak");
+                submitBtn.disabled = true;
+            } else if (level === 1) {
+                statusBar.style.width = "100%";
+                statusBar.classList.add("medium");
+                statusText.classList.add("medium");
+                submitBtn.disabled = true;
+            } else {
+                statusBar.style.width = "100%";
+                statusBar.classList.add("strong");
+                statusText.classList.add("strong");
+                submitBtn.disabled = false;
+            }
+
+            statusText.textContent = message;
+        }
+
+        // Слушаем изменения всех полей
+        [groupSelect, studentSelect, usernameInput, password1, password2].forEach(function (el) {
+            if (el) {
+                el.addEventListener("input", updateStatus);
+                el.addEventListener("change", updateStatus);
+            }
+        });
+
+        updateStatus();
     });
 </script>
 {% endblock %}
